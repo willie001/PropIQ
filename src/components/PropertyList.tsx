@@ -14,11 +14,22 @@ type PropertyListProps = {
 export default function PropertyList({ properties }: PropertyListProps) {
   const hasProperties = properties.length > 0;
 
+  const occupiedCount = properties.filter((p) => p.status === 'occupied').length;
+  const vacantCount = properties.filter((p) => p.status === 'vacant').length;
+
   return (
     <section className="bg-slate-800/60 border border-slate-700 rounded-xl p-4 md:p-6 shadow-sm">
-      <h2 className="text-xl font-semibold mb-4 text-slate-100">
+      <h2 className="text-xl font-semibold mb-2 text-slate-100">
         Your properties
       </h2>
+
+      {hasProperties && (
+        <p className="text-sm text-slate-400 mb-4">
+          {properties.length} {properties.length === 1 ? 'property' : 'properties'} total ·{' '}
+          {occupiedCount} {occupiedCount === 1 ? 'occupied' : 'occupied'} ·{' '}
+          {vacantCount} {vacantCount === 1 ? 'vacant' : 'vacant'}
+        </p>
+      )}
 
       {!hasProperties && (
         <p className="text-sm text-slate-400">
