@@ -9,20 +9,32 @@ export default function Home() {
     <AuthGate>
       <LayoutShell>
         <div className="max-w-3xl w-full mx-auto space-y-6">
-          <header className="mb-2">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">
-              Dashboard
-            </h1>
-            <p className="text-sm md:text-base text-slate-300">
-              High-level view of your properties, tenants and upcoming tasks.
-            </p>
-          </header>
+          {/* Dashboard section */}
+          <section id="dashboard-section" className="mb-2">
+            <header>
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                Dashboard
+              </h1>
+              <p className="text-sm md:text-base text-slate-300">
+                High-level view of your properties, tenants and upcoming tasks.
+              </p>
+            </header>
+          </section>
 
-          <PropertyListContainer />
+          {/* Properties section */}
+          <section id="properties-section">
+            <PropertyListContainer />
+          </section>
 
-          <LeaseListContainer />
+          {/* Leases section */}
+          <section id="leases-section">
+            <LeaseListContainer />
+          </section>
 
-          <TenantsListContainer />
+          {/* Tenants section */}
+          <section id="tenants-section">
+            <TenantsListContainer />
+          </section>
         </div>
       </LayoutShell>
     </AuthGate>

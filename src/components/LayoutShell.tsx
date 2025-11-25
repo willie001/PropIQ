@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import TopNav from './TopNav';
 
 type LayoutShellProps = {
   children: ReactNode;
@@ -23,33 +24,14 @@ export default function LayoutShell({ children }: LayoutShellProps) {
             </div>
           </div>
 
-          {/* Top nav (visible on md+ screens) */}
-          <nav className="hidden md:flex gap-2 text-sm">
-            <button
-              type="button"
-              className="px-3 py-1 rounded-full bg-slate-100 text-slate-900 font-medium"
-            >
-              Dashboard
-            </button>
-            <button
-              type="button"
-              className="px-3 py-1 rounded-full border border-slate-600 text-slate-200 hover:border-slate-400 transition"
-            >
-              Properties
-            </button>
-            <button
-              type="button"
-              className="px-3 py-1 rounded-full border border-slate-600 text-slate-200 hover:border-slate-400 transition"
-            >
-              Settings
-            </button>
-          </nav>
+          {/* Top nav (desktop) */}
+          <TopNav />
         </div>
       </header>
 
       {/* Main layout: sidebar + content */}
       <div className="max-w-6xl mx-auto px-4 py-6 flex flex-col md:flex-row gap-6">
-        {/* Sidebar (only on md+ for now) */}
+        {/* Sidebar (md+ only) */}
         <aside className="hidden md:block md:w-60 shrink-0">
           <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 text-sm space-y-3">
             <div className="font-semibold text-slate-100">Overview</div>

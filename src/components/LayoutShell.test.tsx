@@ -12,7 +12,7 @@ describe('LayoutShell', () => {
     expect(screen.getByText(/propiq/i)).toBeInTheDocument();
   });
 
-  it('renders navigation buttons', () => {
+  it('renders navigation buttons for main sections', () => {
     render(
       <LayoutShell>
         <div>Page content</div>
@@ -26,7 +26,10 @@ describe('LayoutShell', () => {
       screen.getByRole('button', { name: /properties/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: /settings/i })
+      screen.getByRole('button', { name: /leases/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /tenants/i })
     ).toBeInTheDocument();
   });
 
