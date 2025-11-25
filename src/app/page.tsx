@@ -2,6 +2,7 @@ import AuthGate from '@/components/AuthGate';
 import LayoutShell from '@/components/LayoutShell';
 import PropertyListContainer from '@/components/PropertyListContainer';
 import LeaseListContainer from '@/components/LeaseListContainer';
+import TenantsListContainer from '@/components/TenantsListContainer';
 
 export default function Home() {
   return (
@@ -20,6 +21,8 @@ export default function Home() {
           <PropertyListContainer />
 
           <LeaseListContainer />
+
+          <TenantsListContainer />
         </div>
       </LayoutShell>
     </AuthGate>
