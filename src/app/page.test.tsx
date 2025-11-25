@@ -8,8 +8,10 @@ describe('Home page', () => {
     // Brand visible in layout
     expect(screen.getByText(/propiq/i)).toBeInTheDocument();
 
-    // Page heading
-    expect(screen.getByRole('heading', { name: /dashboard/i })).toBeInTheDocument();
+    // Dashboard heading
+    expect(
+      screen.getByRole('heading', { name: /dashboard/i })
+    ).toBeInTheDocument();
 
     // Description
     expect(

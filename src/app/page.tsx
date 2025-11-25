@@ -1,20 +1,5 @@
 import LayoutShell from '@/components/LayoutShell';
-import PropertyList, { Property } from '@/components/PropertyList';
-
-const demoProperties: Property[] = [
-  {
-    id: '1',
-    name: '36 Chatsworth Drive',
-    suburb: 'Carramar',
-    status: 'occupied',
-  },
-  {
-    id: '2',
-    name: '11 Staunton Vale',
-    suburb: 'Carramar',
-    status: 'vacant',
-  },
-];
+import PropertyListContainer from '@/components/PropertyListContainer';
 
 export default function Home() {
   return (
@@ -29,7 +14,7 @@ export default function Home() {
           </p>
         </header>
 
-        <PropertyList properties={demoProperties} />
+        <PropertyListContainer />
       </div>
     </LayoutShell>
   );
