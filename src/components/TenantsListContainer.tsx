@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import TenantsList, { TenantListItem } from './TenantsList';
+import AddTenantForm, { TenantFormValues } from './AddTenantForm';
 
 type LoadState = 'loading' | 'error' | 'success';
 
@@ -57,29 +58,56 @@ export default function TenantsListContainer() {
     loadTenants();
   }, []);
 
+  async function handleAddTenant(values: TenantFormValues) {
+    const { error } = await supabase.from('tenants').insert({
+      first_name: values.firstName,
+      last_name: values.lastName,
+      email: values.email || null,
+      phone: values.phone || null,
+    });
+
+    if (error) {
+      console.error('Error inserting tenant', error);
+      throw error; // let form show generic error
+    }
+
+    await loadTenants();
+  }
+
   if (state === 'loading') {
     return (
-      <section className="bg-slate-800/60 border border-slate-700 rounded-xl p-4 md:p-6 shadow-sm">
-        <h2 className="text-xl font-semibold mb-2 text-slate-100">
-          Tenants
-        </h2>
-        <p className="text-sm text-slate-400">Loading tenants…</p>
-      </section>
+      <div className="space-y-4">
+        <AddTenantForm onAdd={handleAddTenant} />
+        <section className="bg-slate-800/60 border border-slate-700 rounded-xl p-4 md:p-6 shadow-sm">
+          <h2 className="text-xl font-semibold mb-2 text-slate-100">
+            Tenants
+          </h2>
+          <p className="text-sm text-slate-400">Loading tenants…</p>
+        </section>
+      </div>
     );
   }
 
   if (state === 'error') {
     return (
-      <section className="bg-slate-800/60 border border-slate-700 rounded-xl p-4 md:p-6 shadow-sm">
-        <h2 className="text-xl font-semibold mb-2 text-slate-100">
-          Tenants
-        </h2>
-        <p className="text-sm text-red-400">
-          Could not load tenants. Please try again.
-        </p>
-      </section>
+      <div className="space-y-4">
+        <AddTenantForm onAdd={handleAddTenant} />
+        <section className="bg-slate-800/60 border border-slate-700 rounded-xl p-4 md:p-6 shadow-sm">
+          <h2 className="text-xl font-semibold mb-2 text-slate-100">
+            Tenants
+          </h2>
+          <p className="text-sm text-red-400">
+            Could not load tenants. Please try again.
+          </p>
+        </section>
+      </div>
     );
   }
 
-  return <TenantsList tenants={tenants} />;
+  return (
+    <div className="space-y-4">
+      <AddTenantForm onAdd={handleAddTenant} />
+      <TenantsList tenants={tenants} />
+    </div>
+  );
 }
