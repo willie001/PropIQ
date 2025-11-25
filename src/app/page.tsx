@@ -1,6 +1,7 @@
 import AuthGate from '@/components/AuthGate';
 import LayoutShell from '@/components/LayoutShell';
 import PropertyListContainer from '@/components/PropertyListContainer';
+import LeaseListContainer from '@/components/LeaseListContainer';
 
 export default function Home() {
   return (
@@ -17,6 +18,8 @@ export default function Home() {
           </header>
 
           <PropertyListContainer />
+
+          <LeaseListContainer />
         </div>
       </LayoutShell>
     </AuthGate>
