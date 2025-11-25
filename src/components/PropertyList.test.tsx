@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import PropertyList from './PropertyList';
 
 type Property = {
@@ -51,5 +52,29 @@ describe('PropertyList', () => {
     expect(
       screen.getByText(/1 vacant/i)
     ).toBeInTheDocument();
+  });
+
+  it('allows filtering by occupied and vacant status', async () => {
+    const user = userEvent.setup();
+    render(<PropertyList properties={sampleProperties} />);
+
+    // default: All – both properties visible
+    expect(screen.getByText(/36 chatsworth drive/i)).toBeInTheDocument();
+    expect(screen.getByText(/11 staunton vale/i)).toBeInTheDocument();
+
+    // Filter: Occupied
+    await user.click(screen.getByRole('button', { name: /occupied/i }));
+    expect(screen.getByText(/36 chatsworth drive/i)).toBeInTheDocument();
+    expect(screen.queryByText(/11 staunton vale/i)).not.toBeInTheDocument();
+
+    // Filter: Vacant
+    await user.click(screen.getByRole('button', { name: /vacant/i }));
+    expect(screen.getByText(/11 staunton vale/i)).toBeInTheDocument();
+    expect(screen.queryByText(/36 chatsworth drive/i)).not.toBeInTheDocument();
+
+    // Back to All
+    await user.click(screen.getByRole('button', { name: /all/i }));
+    expect(screen.getByText(/36 chatsworth drive/i)).toBeInTheDocument();
+    expect(screen.getByText(/11 staunton vale/i)).toBeInTheDocument();
   });
 });
