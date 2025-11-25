@@ -12,7 +12,7 @@ describe('LayoutShell', () => {
     expect(screen.getByText(/propiq/i)).toBeInTheDocument();
   });
 
-  it('renders navigation buttons for main sections', () => {
+  it('renders navigation buttons for main sections (desktop nav)', () => {
     render(
       <LayoutShell>
         <div>Page content</div>
@@ -30,6 +30,18 @@ describe('LayoutShell', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole('button', { name: /tenants/i })
+    ).toBeInTheDocument();
+  });
+
+  it('renders a mobile navigation menu button', () => {
+    render(
+      <LayoutShell>
+        <div>Page content</div>
+      </LayoutShell>
+    );
+
+    expect(
+      screen.getByRole('button', { name: /open navigation menu/i })
     ).toBeInTheDocument();
   });
 

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import TopNav from './TopNav';
+import MobileNav from './MobileNav';
 
 type LayoutShellProps = {
   children: ReactNode;
@@ -11,7 +12,7 @@ export default function LayoutShell({ children }: LayoutShellProps) {
       {/* Top bar */}
       <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
-          {/* Brand */}
+          {/* Brand + mobile menu */}
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/40 text-xs font-bold text-emerald-300">
               PIQ
@@ -24,8 +25,14 @@ export default function LayoutShell({ children }: LayoutShellProps) {
             </div>
           </div>
 
-          {/* Top nav (desktop) */}
-          <TopNav />
+          {/* Desktop nav + mobile burger */}
+          <div className="flex items-center gap-2">
+            {/* Desktop nav */}
+            <TopNav />
+
+            {/* Mobile nav (burger) */}
+            <MobileNav />
+          </div>
         </div>
       </header>
 
