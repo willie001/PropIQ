@@ -14,9 +14,10 @@ export type Property = {
 
 type PropertyListProps = {
   properties: Property[];
+  onArchive?: (id: string) => void;
 };
 
-export default function PropertyList({ properties }: PropertyListProps) {
+export default function PropertyList({ properties, onArchive }: PropertyListProps) {
   const [filter, setFilter] = useState<Filter>('all');
 
   const hasProperties = properties.length > 0;
@@ -76,13 +77,15 @@ export default function PropertyList({ properties }: PropertyListProps) {
           <ul className="space-y-3">
             {filteredProperties.map((property) => (
               <li
-                key={property.id}
-                className="flex items-center justify-between rounded-lg bg-slate-900/60 px-3 py-2 border border-slate-700"
-              >
-                <div>
-                  <p className="font-medium text-slate-100">{property.name}</p>
-                  <p className="text-xs text-slate-400">{property.suburb}</p>
-                </div>
+              key={property.id}
+              className="flex items-center justify-between rounded-lg bg-slate-900/60 px-3 py-2 border border-slate-700"
+            >
+              <div>
+                <p className="font-medium text-slate-100">{property.name}</p>
+                <p className="text-xs text-slate-400">{property.suburb}</p>
+              </div>
+
+              <div className="flex items-center gap-2">
                 <span
                   className={`text-xs px-2 py-1 rounded-full border ${
                     property.status === 'occupied'
@@ -92,7 +95,18 @@ export default function PropertyList({ properties }: PropertyListProps) {
                 >
                   {property.status === 'occupied' ? 'Occupied' : 'Vacant'}
                 </span>
-              </li>
+
+                {onArchive && (
+                  <button
+                    type="button"
+                    onClick={() => onArchive(property.id)}
+                    className="text-[11px] px-2 py-1 rounded-md border border-slate-600 text-slate-300 hover:border-red-400 hover:text-red-300 transition"
+                  >
+                    Archive
+                  </button>
+                )}
+              </div>
+            </li>
             ))}
           </ul>
         </>

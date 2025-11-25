@@ -77,4 +77,25 @@ describe('PropertyList', () => {
     expect(screen.getByText(/36 chatsworth drive/i)).toBeInTheDocument();
     expect(screen.getByText(/11 staunton vale/i)).toBeInTheDocument();
   });
+
+    it('calls onArchive when archive button is clicked', async () => {
+    const user = userEvent.setup();
+    const handleArchive = jest.fn();
+
+    render(
+      <PropertyList
+        properties={sampleProperties}
+        onArchive={handleArchive}
+      />
+    );
+
+    // There will be one archive button per row; click the first one
+    const archiveButtons = screen.getAllByRole('button', { name: /archive/i });
+    await user.click(archiveButtons[0]);
+
+    expect(handleArchive).toHaveBeenCalledTimes(1);
+    expect(handleArchive).toHaveBeenCalledWith('1'); // id of 36 Chatsworth Drive
+  });
+
+
 });
