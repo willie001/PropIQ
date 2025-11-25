@@ -1,3 +1,4 @@
+import LayoutShell from '@/components/LayoutShell';
 import PropertyList, { Property } from '@/components/PropertyList';
 
 const demoProperties: Property[] = [
@@ -17,20 +18,19 @@ const demoProperties: Property[] = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center">
-      <div className="max-w-3xl w-full px-4 py-8 space-y-6">
-        <header className="text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-3">
-            PropIQ
+    <LayoutShell>
+      <div className="max-w-3xl w-full mx-auto space-y-6">
+        <header className="mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">
+            Dashboard
           </h1>
-          <p className="text-lg text-slate-300">
-            Personal property management app – starting small and growing
-            feature by feature.
+          <p className="text-sm md:text-base text-slate-300">
+            High-level view of your properties, tenants and upcoming tasks.
           </p>
         </header>
 
         <PropertyList properties={demoProperties} />
       </div>
-    </main>
+    </LayoutShell>
   );
 }
