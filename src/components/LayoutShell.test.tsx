@@ -1,6 +1,17 @@
 import { render, screen } from '@testing-library/react';
 import LayoutShell from './LayoutShell';
 
+// Mock next/navigation so useRouter/usePathname don't blow up in tests
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+    back: jest.fn(),
+  }),
+  usePathname: () => '/',
+}));
+
 describe('LayoutShell', () => {
   it('shows the PropIQ brand in the header', () => {
     render(

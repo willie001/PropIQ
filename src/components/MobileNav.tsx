@@ -1,31 +1,29 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 
 type NavItem = {
-  id: string;
   label: string;
+  href: string;
 };
 
 const navItems: NavItem[] = [
-  { id: 'dashboard-section', label: 'Dashboard' },
-  { id: 'properties-section', label: 'Properties' },
-  { id: 'leases-section', label: 'Leases' },
-  { id: 'tenants-section', label: 'Tenants' },
+  { label: 'Dashboard', href: '/' },
+  { label: 'Properties', href: '/properties' },
+  { label: 'Leases', href: '/leases' },
+  { label: 'Tenants', href: '/tenants' },
 ];
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const handleScroll = (targetId: string) => {
-    const el = document.getElementById(targetId);
-    if (el) {
-      el.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      });
-    }
+  const handleNavigate = (href: string) => {
     setOpen(false);
+    if (href === pathname) return;
+    router.push(href);
   };
 
   return (
@@ -37,7 +35,6 @@ export default function MobileNav() {
         onClick={() => setOpen((prev) => !prev)}
         className="inline-flex items-center justify-center rounded-md border border-slate-700 px-2 py-1 text-slate-200 hover:border-emerald-400 hover:text-emerald-200 transition"
       >
-        {/* simple burger icon */}
         <span className="sr-only">Toggle navigation</span>
         <div className="space-y-[3px]">
           <span className="block h-[2px] w-5 bg-slate-300" />
@@ -61,16 +58,23 @@ export default function MobileNav() {
           </div>
 
           <nav className="mt-4 px-6 space-y-2">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => handleScroll(item.id)}
-                className="block w-full text-left rounded-lg border border-slate-700 bg-slate-900/60 px-4 py-3 text-base text-slate-100 hover:border-emerald-400 hover:text-emerald-100 transition"
-              >
-                {item.label}
-              </button>
-            ))}
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <button
+                  key={item.href}
+                  type="button"
+                  onClick={() => handleNavigate(item.href)}
+                  className={`block w-full text-left rounded-lg border px-4 py-3 text-base transition ${
+                    isActive
+                      ? 'border-emerald-500/70 text-emerald-200 bg-emerald-500/10'
+                      : 'border-slate-700 bg-slate-900/60 text-slate-100 hover:border-emerald-400 hover:text-emerald-100'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
           </nav>
         </div>
       )}

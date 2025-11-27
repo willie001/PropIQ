@@ -15,9 +15,11 @@ export type Property = {
 type PropertyListProps = {
   properties: Property[];
   onArchive?: (id: string) => void;
+  onUpdateProperty?: (id: string) => void;
+  onManageTenants?: (id: string) => void;
 };
 
-export default function PropertyList({ properties, onArchive }: PropertyListProps) {
+export default function PropertyList({ properties, onArchive, onUpdateProperty, onManageTenants }: PropertyListProps) {
   const [filter, setFilter] = useState<Filter>('all');
 
   const hasProperties = properties.length > 0;
@@ -85,7 +87,7 @@ export default function PropertyList({ properties, onArchive }: PropertyListProp
                 <p className="text-xs text-slate-400">{property.suburb}</p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <span
                   className={`text-xs px-2 py-1 rounded-full border ${
                     property.status === 'occupied'
@@ -96,14 +98,38 @@ export default function PropertyList({ properties, onArchive }: PropertyListProp
                   {property.status === 'occupied' ? 'Occupied' : 'Vacant'}
                 </span>
 
-                {onArchive && (
-                  <button
-                    type="button"
-                    onClick={() => onArchive(property.id)}
-                    className="text-[11px] px-2 py-1 rounded-md border border-slate-600 text-slate-300 hover:border-red-400 hover:text-red-300 transition"
-                  >
-                    Archive
-                  </button>
+                {(onUpdateProperty || onManageTenants || onArchive) && (
+                  <div className="flex items-center gap-1">
+                    {onUpdateProperty && (
+                      <button
+                        type="button"
+                        onClick={() => onUpdateProperty(property.id)}
+                        className="text-[11px] px-2 py-1 rounded-md border border-slate-600 text-slate-300 hover:border-emerald-400 hover:text-emerald-200 transition"
+                      >
+                        Update
+                      </button>
+                    )}
+
+                    {onManageTenants && (
+                      <button
+                        type="button"
+                        onClick={() => onManageTenants(property.id)}
+                        className="text-[11px] px-2 py-1 rounded-md border border-slate-600 text-slate-300 hover:border-sky-400 hover:text-sky-200 transition"
+                      >
+                        Tenants &amp; leases
+                      </button>
+                    )}
+
+                    {onArchive && (
+                      <button
+                        type="button"
+                        onClick={() => onArchive(property.id)}
+                        className="text-[11px] px-2 py-1 rounded-md border border-slate-600 text-slate-300 hover:border-red-400 hover:text-red-300 transition"
+                      >
+                        Archive
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             </li>
