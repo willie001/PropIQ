@@ -1,12 +1,99 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import AuthGate from '@/components/AuthGate';
 import LayoutShell from '@/components/LayoutShell';
+import AddPropertyForm, {
+  PropertyFormValues,
+  PropertyStatus,
+} from '@/components/AddPropertyForm';
+import { supabase } from '@/lib/supabaseClient';
 
-type Props = {
-  params: { id: string };
-};
+type LoadState = 'loading' | 'error' | 'not_found' | 'ready';
 
-export default function EditPropertyPage({ params }: Props) {
-  const { id } = params;
+export default function EditPropertyPage() {
+  const router = useRouter();
+  const params = useParams<{ id: string }>();
+  const id = params?.id; // comes from the [id] segment in the URL
+
+  const [state, setState] = useState<LoadState>('loading');
+  const [initialValues, setInitialValues] =
+    useState<PropertyFormValues | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadProperty() {
+      // Guard against bad params
+      if (!id || id === 'undefined') {
+        console.error('Invalid property id in route params:', id);
+        if (isMounted) setState('not_found');
+        return;
+      }
+
+      setState('loading');
+
+      const { data, error } = await supabase
+        .from('properties')
+        .select('id, name, suburb, status')
+        .eq('id', id)
+        .single();
+
+      if (!isMounted) return;
+
+      if (error) {
+        console.error('Error loading property for edit', error);
+        setState('error');
+        return;
+      }
+
+      if (!data) {
+        setState('not_found');
+        return;
+      }
+
+      const status: PropertyStatus =
+        data.status === 'vacant' ? 'vacant' : 'occupied';
+
+      setInitialValues({
+        name: data.name ?? '',
+        suburb: data.suburb ?? '',
+        status,
+      });
+
+      setState('ready');
+    }
+
+    loadProperty();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
+
+  async function handleUpdateProperty(values: PropertyFormValues) {
+    if (!id || id === 'undefined') {
+      console.error('Invalid property id when saving:', id);
+      throw new Error('Invalid property id');
+    }
+
+    const { error } = await supabase
+      .from('properties')
+      .update({
+        name: values.name,
+        suburb: values.suburb,
+        status: values.status,
+      })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating property', error);
+      throw error;
+    }
+
+    router.push('/properties');
+  }
 
   return (
     <AuthGate>
@@ -17,15 +104,41 @@ export default function EditPropertyPage({ params }: Props) {
               Update property
             </h1>
             <p className="text-sm text-slate-300">
-              Property ID: <span className="font-mono text-xs">{id}</span>
+              Edit the details of this property.
             </p>
           </header>
 
-          <section className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 md:p-6">
-            <p className="text-sm text-slate-300">
-              We’ll later add a form here to edit property details.
-            </p>
-          </section>
+          {state === 'loading' && (
+            <section className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 md:p-6">
+              <p className="text-sm text-slate-300">Loading property…</p>
+            </section>
+          )}
+
+          {state === 'error' && (
+            <section className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 md:p-6">
+              <p className="text-sm text-red-400">
+                Could not load this property. Please try again.
+              </p>
+            </section>
+          )}
+
+          {state === 'not_found' && (
+            <section className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 md:p-6">
+              <p className="text-sm text-slate-300">
+                This property could not be found or you don&apos;t have access
+                to it.
+              </p>
+            </section>
+          )}
+
+          {state === 'ready' && initialValues && (
+            <AddPropertyForm
+              onAdd={handleUpdateProperty}
+              initialValues={initialValues}
+              title="Property details"
+              submitLabel="Save changes"
+            />
+          )}
         </div>
       </LayoutShell>
     </AuthGate>
