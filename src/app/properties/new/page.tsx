@@ -1,12 +1,12 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import AuthGate from '@/components/AuthGate';
 import LayoutShell from '@/components/LayoutShell';
 import AddPropertyForm, {
   PropertyFormValues,
 } from '@/components/AddPropertyForm';
 import { supabase } from '@/lib/supabaseClient';
+import { useRouter } from 'next/navigation';
 
 export default function NewPropertyPage() {
   const router = useRouter();
@@ -14,19 +14,22 @@ export default function NewPropertyPage() {
   async function handleAddProperty(values: PropertyFormValues) {
     const { error } = await supabase.from('properties').insert({
       name: values.name,
+      street: values.street ?? null,
       suburb: values.suburb,
+      state: values.state ?? null,
+      postcode: values.postcode ?? null,
+      country: values.country || 'Australia',
       status: values.status,
+      bedrooms: values.bedrooms ?? null,
+      bathrooms: values.bathrooms ?? null,
+      car_bays: values.car_bays ?? null,
+      notes: values.notes ?? null,
       is_archived: false,
+      // owner_id and account_id are handled by triggers
     });
 
     if (error) {
-      // 👇 more detailed logging
-      console.error('Error inserting property:', {
-        message: (error as any).message,
-        code: (error as any).code,
-        details: (error as any).details,
-        hint: (error as any).hint,
-      });
+      console.error('Error inserting property', error);
       throw error;
     }
 
@@ -42,7 +45,8 @@ export default function NewPropertyPage() {
               Add property
             </h1>
             <p className="text-sm text-slate-300">
-              Capture a new property in your portfolio.
+              Capture the key details for a new property in your
+              portfolio.
             </p>
           </header>
 

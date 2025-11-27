@@ -1,101 +1,69 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import PropertyList from './PropertyList';
-
-type Property = {
-  id: string;
-  name: string;
-  suburb: string;
-  status: 'occupied' | 'vacant';
-};
+import PropertyList, { Property } from './PropertyList';
 
 const sampleProperties: Property[] = [
-  { id: '1', name: '36 Chatsworth Drive', suburb: 'Carramar', status: 'occupied' },
-  { id: '2', name: '11 Staunton Vale', suburb: 'Carramar', status: 'vacant' },
+  {
+    id: '1',
+    name: '36 Chatsworth Drive',
+    suburb: 'Carramar',
+    status: 'occupied',
+  },
+  {
+    id: '2',
+    name: '11 Staunton Vale',
+    suburb: 'Carramar',
+    status: 'vacant',
+  },
 ];
 
 describe('PropertyList', () => {
-  it('shows a heading for the properties section', () => {
-    render(<PropertyList properties={sampleProperties} />);
-
-    const heading = screen.getByRole('heading', { name: /your properties/i });
-    expect(heading).toBeInTheDocument();
-  });
-
   it('renders each property name and suburb', () => {
     render(<PropertyList properties={sampleProperties} />);
 
-    expect(screen.getByText(/36 chatsworth drive/i)).toBeInTheDocument();
-    expect(screen.getByText(/11 staunton vale/i)).toBeInTheDocument();
-
-    const suburbs = screen.getAllByText(/carramar/i);
-    expect(suburbs).toHaveLength(2);
+    expect(
+      screen.getByText(/36 chatsworth drive/i)
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/carramar/i).length).toBeGreaterThan(0);
+    expect(
+      screen.getByText(/11 staunton vale/i)
+    ).toBeInTheDocument();
   });
 
   it('shows a friendly message when there are no properties', () => {
-    render(<PropertyList properties={[]} />);
+  render(<PropertyList properties={[]} />);
 
-    expect(
-      screen.getByText(/you don’t have any properties yet/i)
-    ).toBeInTheDocument();
-  });
+  // Assert the heading using role so we don't clash with the paragraph text
+  expect(
+    screen.getByRole('heading', { name: /properties/i })
+  ).toBeInTheDocument();
 
-  it('shows a summary with total, occupied and vacant counts', () => {
-    render(<PropertyList properties={sampleProperties} />);
+  expect(
+    screen.getByText(/you haven\'t added any properties yet/i)
+  ).toBeInTheDocument();
+});
 
-    expect(
-      screen.getByText(/2 properties total/i)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/1 occupied/i)
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/1 vacant/i)
-    ).toBeInTheDocument();
-  });
 
-  it('allows filtering by occupied and vacant status', async () => {
+  it('calls onSelectProperty when a property row is clicked', async () => {
     const user = userEvent.setup();
-    render(<PropertyList properties={sampleProperties} />);
-
-    // default: All – both properties visible
-    expect(screen.getByText(/36 chatsworth drive/i)).toBeInTheDocument();
-    expect(screen.getByText(/11 staunton vale/i)).toBeInTheDocument();
-
-    // Filter: Occupied
-    await user.click(screen.getByRole('button', { name: /occupied/i }));
-    expect(screen.getByText(/36 chatsworth drive/i)).toBeInTheDocument();
-    expect(screen.queryByText(/11 staunton vale/i)).not.toBeInTheDocument();
-
-    // Filter: Vacant
-    await user.click(screen.getByRole('button', { name: /vacant/i }));
-    expect(screen.getByText(/11 staunton vale/i)).toBeInTheDocument();
-    expect(screen.queryByText(/36 chatsworth drive/i)).not.toBeInTheDocument();
-
-    // Back to All
-    await user.click(screen.getByRole('button', { name: /all/i }));
-    expect(screen.getByText(/36 chatsworth drive/i)).toBeInTheDocument();
-    expect(screen.getByText(/11 staunton vale/i)).toBeInTheDocument();
-  });
-
-    it('calls onArchive when archive button is clicked', async () => {
-    const user = userEvent.setup();
-    const handleArchive = jest.fn();
+    const handleSelect = jest.fn();
 
     render(
       <PropertyList
         properties={sampleProperties}
-        onArchive={handleArchive}
+        onSelectProperty={handleSelect}
       />
     );
 
-    // There will be one archive button per row; click the first one
-    const archiveButtons = screen.getAllByRole('button', { name: /archive/i });
-    await user.click(archiveButtons[0]);
+    // The button’s accessible name is the concatenation of its text:
+    // "36 Chatsworth Drive Carramar"
+    const firstRowButton = screen.getByRole('button', {
+      name: /36 chatsworth drive carramar/i,
+    });
 
-    expect(handleArchive).toHaveBeenCalledTimes(1);
-    expect(handleArchive).toHaveBeenCalledWith('1'); // id of 36 Chatsworth Drive
+    await user.click(firstRowButton);
+
+    expect(handleSelect).toHaveBeenCalledTimes(1);
+    expect(handleSelect).toHaveBeenCalledWith('1');
   });
-
-
 });

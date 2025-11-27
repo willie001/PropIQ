@@ -48,11 +48,13 @@ describe("AddPropertyForm", () => {
     await user.click(screen.getByRole("button", { name: /add property/i }));
 
     expect(onAdd).toHaveBeenCalledTimes(1);
-    expect(onAdd).toHaveBeenCalledWith({
-      name: "99 Test Street",
-      suburb: "Testville",
-      status: "occupied",
-    });
+    expect(onAdd).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "99 Test Street",
+        suburb: "Testville",
+        status: "occupied",
+      })
+    );
 
     // Inputs should be cleared after a successful submit
     expect(nameInput).toHaveValue("");

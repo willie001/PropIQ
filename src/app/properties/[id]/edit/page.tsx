@@ -15,7 +15,7 @@ type LoadState = 'loading' | 'error' | 'not_found' | 'ready';
 export default function EditPropertyPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
-  const id = params?.id; // comes from the [id] segment in the URL
+  const id = params?.id;
 
   const [state, setState] = useState<LoadState>('loading');
   const [initialValues, setInitialValues] =
@@ -25,7 +25,6 @@ export default function EditPropertyPage() {
     let isMounted = true;
 
     async function loadProperty() {
-      // Guard against bad params
       if (!id || id === 'undefined') {
         console.error('Invalid property id in route params:', id);
         if (isMounted) setState('not_found');
@@ -36,7 +35,22 @@ export default function EditPropertyPage() {
 
       const { data, error } = await supabase
         .from('properties')
-        .select('id, name, suburb, status')
+        .select(
+          [
+            'id',
+            'name',
+            'street',
+            'suburb',
+            'state',
+            'postcode',
+            'country',
+            'status',
+            'bedrooms',
+            'bathrooms',
+            'car_bays',
+            'notes',
+          ].join(', ')
+        )
         .eq('id', id)
         .single();
 
@@ -54,12 +68,29 @@ export default function EditPropertyPage() {
       }
 
       const status: PropertyStatus =
-        data.status === 'vacant' ? 'vacant' : 'occupied';
+        data.status === 'occupied' ? 'occupied' : 'vacant';
 
       setInitialValues({
         name: data.name ?? '',
+        street: data.street ?? '',
         suburb: data.suburb ?? '',
+        state: data.state ?? '',
+        postcode: data.postcode ?? '',
+        country: data.country ?? 'Australia',
         status,
+        bedrooms:
+          data.bedrooms !== null && data.bedrooms !== undefined
+            ? data.bedrooms
+            : null,
+        bathrooms:
+          data.bathrooms !== null && data.bathrooms !== undefined
+            ? data.bathrooms
+            : null,
+        car_bays:
+          data.car_bays !== null && data.car_bays !== undefined
+            ? data.car_bays
+            : null,
+        notes: data.notes ?? '',
       });
 
       setState('ready');
@@ -82,8 +113,16 @@ export default function EditPropertyPage() {
       .from('properties')
       .update({
         name: values.name,
+        street: values.street ?? null,
         suburb: values.suburb,
+        state: values.state ?? null,
+        postcode: values.postcode ?? null,
+        country: values.country || 'Australia',
         status: values.status,
+        bedrooms: values.bedrooms ?? null,
+        bathrooms: values.bathrooms ?? null,
+        car_bays: values.car_bays ?? null,
+        notes: values.notes ?? null,
       })
       .eq('id', id);
 
@@ -92,7 +131,7 @@ export default function EditPropertyPage() {
       throw error;
     }
 
-    router.push('/properties');
+    router.push(`/properties/${id}`);
   }
 
   return (
@@ -110,7 +149,9 @@ export default function EditPropertyPage() {
 
           {state === 'loading' && (
             <section className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 md:p-6">
-              <p className="text-sm text-slate-300">Loading property…</p>
+              <p className="text-sm text-slate-300">
+                Loading property…
+              </p>
             </section>
           )}
 
@@ -125,8 +166,8 @@ export default function EditPropertyPage() {
           {state === 'not_found' && (
             <section className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 md:p-6">
               <p className="text-sm text-slate-300">
-                This property could not be found or you don&apos;t have access
-                to it.
+                This property could not be found or you don&apos;t have
+                access to it.
               </p>
             </section>
           )}

@@ -30,9 +30,9 @@ export default function PropertyListContainer() {
     const mapped: Property[] =
       (data ?? []).map((row: any) => ({
         id: row.id,
-        name: row.name,
-        suburb: row.suburb,
-        status: row.status === 'occupied' ? 'occupied' : 'vacant',
+        name: row.name ?? '',
+        suburb: row.suburb ?? '',
+        status: row.status === 'vacant' ? 'vacant' : 'occupied',
       })) ?? [];
 
     setProperties(mapped);
@@ -43,27 +43,9 @@ export default function PropertyListContainer() {
     loadProperties();
   }, []);
 
-  async function handleArchiveProperty(id: string) {
-    const { error } = await supabase
-      .from('properties')
-      .update({ is_archived: true })
-      .eq('id', id);
-
-    if (error) {
-      console.error('Error archiving property', error);
-      return;
-    }
-
-    await loadProperties();
-  }
-
-  function handleUpdateProperty(id: string) {
-    router.push(`/properties/${id}/edit`);
-  }
-
-  function handleManageTenants(id: string) {
-    router.push(`/properties/${id}/tenants-leases`);
-  }
+  const handleSelectProperty = (id: string) => {
+    router.push(`/properties/${id}`);
+  };
 
   if (state === 'loading') {
     return (
@@ -92,9 +74,7 @@ export default function PropertyListContainer() {
   return (
     <PropertyList
       properties={properties}
-      onArchive={handleArchiveProperty}
-      onUpdateProperty={handleUpdateProperty}
-      onManageTenants={handleManageTenants}
+      onSelectProperty={handleSelectProperty}
     />
   );
 }
